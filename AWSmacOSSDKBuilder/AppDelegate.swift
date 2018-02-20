@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import AWSCore
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -15,6 +16,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 	func applicationDidFinishLaunching(_ aNotification: Notification) {
 		// Insert code here to initialize your application
+		AWSDDLog.add(AWSDDTTYLogger.sharedInstance)
+		AWSDDLog.sharedInstance.logLevel = .all
+		print("AWSInfo=\(AWSInfo.default().rootInfoDictionary)")
 	}
 
 	func applicationWillTerminate(_ aNotification: Notification) {

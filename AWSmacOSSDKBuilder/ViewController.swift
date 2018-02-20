@@ -7,21 +7,37 @@
 //
 
 import Cocoa
+import AWSTranscribe
 
 class ViewController: NSViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-
 		// Do any additional setup after loading the view.
 	}
 
+	override func viewDidAppear() {
+		super.viewDidAppear()
+		listJobs()
+	}
+	
 	override var representedObject: Any? {
 		didSet {
 		// Update the view, if already loaded.
 		}
 	}
 
+	func listJobs() {
+		AWSTranscribe.default().listTranscriptionJobs(.completed) { (results, error) in
+			if let error = error {
+				print("error=\(error)")
+			}
+
+			if let results = results {
+				print("results=\(results)")
+			}
+		}
+	}
 
 }
 

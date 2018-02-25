@@ -170,38 +170,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Starts a new transcribe job.
 
- @param request A container for the necessary parameters to execute the
- StartTranscriptionJob service method.
-
- @return An instance of `AWSTask`. On successful execution, `task.result` will
- contain an instance of `AWSTranscribeStartTranscriptionJobOutput`. On failed
- execution, `task.error` may contain an `NSError` with `AWSTranscribeErrorDomain`
- domain and the `AWSTranscribeError` error codes.
-
- @see AWSTranscribeStartTranscriptionJobRequest
- @see AWSTranscribeStartTranscriptionJobOutput
- @see AWSTranscribeError
- */
-- (AWSTask<AWSTranscribeStartTranscriptionJobOutput *> *)startTranscriptionJob:(AWSTranscribeStartTranscriptionJobRequest *)request;
-
-/**
- Starts a new transcribe job.
-
- @param request A container for the necessary parameters to execute the
- 		StartTranscriptionJob service method.
- @param completionHandler The completion handler to call when the load request is complete.
-		`response` - A response object, or `nil` if the request failed.
-		`error` - An error object that indicates why the request failed, or `nil` if the request was successful.
-
- @see AWSTranscribeStartTranscriptionJobRequest
- @see AWSTranscribeStartTranscriptionJobOutput
- */
-- (void)startTranscriptionJobWithRequest:(AWSTranscribeStartTranscriptionJobRequest *)request
-			completionHandler:(void (^ _Nullable)(AWSTranscribeStartTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
-
-/**
- Starts a new transcribe job.
-
  @param jobName The name of the transcribe job
  @param completionHandler The completion handler to call when the load request is complete.
  `response` - A response object, or `nil` if the request failed.
@@ -219,39 +187,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Gets an existing transaction job.
 
- @param request A container for the necessary parameters to execute the
- 		GetTranscriptionJob service method.
-
- @return An instance of `AWSTask`. On successful execution, `task.result` will
- contain an instance of `AWSTranscribeGetTranscriptionJobOutput`. On failed
- execution, `task.error` may contain an `NSError` with `AWSTranscribeErrorDomain`
- domain and the `AWSTranscribeError` error codes.
-
- @see AWSTranscribeGetTranscriptionJobRequest
- @see AWSTranscribeGetTranscriptionJobOutput
- @see AWSTranscribeError
- */
-- (AWSTask<AWSTranscribeGetTranscriptionJobOutput *> *)getTranscriptionJob:(AWSTranscribeGetTranscriptionJobRequest *)request;
-
-/**
- Gets an existing transaction job.
-
- @param request A container for the necessary parameters to execute the
- 		GetTranscriptionJob service method.
- @param completionHandler The completion handler to call when the load request is complete.
-		`response` - A response object, or `nil` if the request failed.
-		`error` - An error object that indicates why the request failed, or `nil` if the request was successful.
-
- @see AWSTranscribeGetTranscriptionJobRequest
- @see AWSTranscribeGetTranscriptionJobOutput
- @see AWSTranscribeError
- */
-- (void)getTranscriptionJobWithRequest:(AWSTranscribeGetTranscriptionJobRequest *)request
-			completionHandler:(void (^ _Nullable)(AWSTranscribeGetTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
-
-/**
- Gets an existing transaction job.
-
  @param jobName The name of the job to get.
  @param completionHandler The completion handler to call when the load request is complete.
  `response` - A response object, or `nil` if the request failed.
@@ -262,39 +197,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)getTranscriptionJob:(NSString *)jobName
 		  completionHandler:(void (^ _Nullable)(AWSTranscribeGetTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
-
-/**
- Returns a list of all transcription jobs matching `jobStatus`.
-
- @param request A container for the necessary parameters to execute the
-		ListTranscriptionJobs service method.
-
- @return An instance of `AWSTask`. On successful execution, `task.result` will
-		contain an instance of `AWSTranscribeListTranscriptionJobsOutput`. On failed
-		execution, `task.error` may contain an `NSError` with `AWSTranscribeErrorDomain`
-		domain and the `AWSTranscribeError` error codes.
-
- @see AWSTranscribeListTranscriptionJobsRequest
- @see AWSTranscribeListTranscriptionJobsOutput
- @see AWSTranscribeError
- */
-- (AWSTask<AWSTranscribeListTranscriptionJobsOutput *> *)listTranscriptionJobs:(AWSTranscribeListTranscriptionJobsRequest *)request;
-
-/**
- Returns a list of all transcription jobs matching `jobStatus`.
-
- @param request A container for the necessary parameters to execute the
- 		GetTranscriptionJob service method.
- @param completionHandler The completion handler to call when the load request is complete.
-		`response` - A response object, or `nil` if the request failed.
-		`error` - An error object that indicates why the request failed, or `nil` if the request was successful.
-
- @see AWSTranscribeListTranscriptionJobsRequest
- @see AWSTranscribeListTranscriptionJobsOutput
- @see AWSTranscribeError
- */
-- (void)listTranscriptionJobsWithRequest:(AWSTranscribeListTranscriptionJobsRequest *)request
-					   completionHandler:(void (^ _Nullable)(AWSTranscribeListTranscriptionJobsOutput * _Nullable response, NSError * _Nullable error))completionHandler;
 
 /**
  Returns a list of all transcription jobs matching `jobStatus`.

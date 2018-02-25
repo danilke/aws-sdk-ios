@@ -59,49 +59,81 @@
 	return @"{\
 	\"version\":\"2.0\",\
 	\"metadata\":{\
-		\"apiVersion\":\"2006-03-01\",\
-		\"checksumFormat\":\"md5\",\
+		\"apiVersion\":\"2015-03-31\",\
 		\"endpointPrefix\":\"transcribe\",\
+		\"protocol\":\"json\",\
 		\"globalEndpoint\":\"transcribe.amazonaws.com\",\
-		\"protocol\":\"rest-xml\",\
-		\"serviceAbbreviation\":\"Amazon Transcribe\",\
-		\"serviceFullName\":\"Amazon Transcribe\",\
-		\"signatureVersion\":\"transcribe\",\
-		\"timestampFormat\":\"rfc822\",\
-		\"uid\":\"transcribe-2018-02-18\"\
+		\"serviceFullName\":\"AWS Transcribe\",\
+		\"signatureVersion\":\"\",\
 	},\
 	\"operations\":{\
-		\"ListBucketMetricsConfigurations\":{\
-			\"name\":\"ListBucketMetricsConfigurations\",\
+		\"GetTranscriptionJob\":{\
+			\"name\":\"GetTranscriptionJob\",\
 			\"http\":{\
-			\"method\":\"GET\",\
-			\"requestUri\":\"/{Bucket}?metrics\"\
+				\"method\":\"POST\",\
+				\"requestUri\":\"/\"\
 			},\
-			\"input\":{\"shape\":\"ListBucketMetricsConfigurationsRequest\"},\
-			\"output\":{\"shape\":\"ListBucketMetricsConfigurationsOutput\"},\
-			\"documentation\":\"Lists the metrics configurations for the bucket.\"\
+			\"input\":{\"shape\":\"GetTranscriptionJobRequest\"},\
+			\"output\":{\"shape\":\"GetTranscriptionJobOutput\"},\
 		},\
-		\"ListBuckets\":{\
-			\"name\":\"ListBuckets\",\
+		\"ListTranscriptionJobs\":{\
+			\"name\":\"ListTranscriptionJobs\",\
 			\"http\":{\
-			\"method\":\"GET\",\
+				\"method\":\"POST\",\
+				\"requestUri\":\"/\"\
+			},\
+			\"input\":{\"shape\":\"ListTranscriptionJobsRequest\"},\
+			\"output\":{\"shape\":\"ListTranscriptionJobsOutput\"},\
+		},\
+		\"StartTranscriptionJob\":{\
+			\"name\":\"StartTranscriptionJob\",\
+			\"http\":{\
+			\"method\":\"POST\",\
 			\"requestUri\":\"/\"\
 			},\
-			\"output\":{\"shape\":\"ListBucketsOutput\"},\
-			\"documentationUrl\":\"http://docs.amazonwebservices.com/AmazonS3/latest/API/RESTServiceGET.html\",\
-			\"documentation\":\"Returns a list of all buckets owned by the authenticated sender of the request.\",\
-			\"alias\":\"GetService\"\
+			\"input\":{\"shape\":\"StartTranscriptionJobRequest\"},\
+			\"output\":{\"shape\":\"StartTranscriptionJobOutput\"},\
 		},\
 	},\
 	\"shapes\":{\
-		\"ListBucketsOutput\":{\
+		\"ListTranscriptionJobsRequest\":{\
+			\"type\":\"structure\",\
+			\"required\":[\"Status\"],\
+			\"members\":{\
+				\"MaxEntries\":{\
+					\"shape\":\"MaxResults\",\
+				},\
+				\"NextToken\":{\
+					\"shape\":\"NextToken\",\
+				},\
+				\"Status\":{\
+					\"shape\":\"JobStatus\",\
+				},\
+			}\
+		},\
+		\"ListTranscriptionJobsOutput\":{\
 			\"type\":\"structure\",\
 			\"members\":{\
-			\"Buckets\":{\"shape\":\"Buckets\"},\
-			\"Owner\":{\"shape\":\"Owner\"}\
-		}\
+				\"Buckets\":{\"shape\":\"Buckets\"},\
+				\"Owner\":{\"shape\":\"Owner\"}\
+			}\
+		},\
+		\"JobStatus\":{\
+			\"type\":\"string\",\
+			\"enum\":[\
+				\"COMPLETED\",\
+				\"FAILED\",\
+				\"IN_PROGRESS\"\
+			],\
+		},\
+		\"EntityId\":{\
+			\"type\":\"string\",\
+			\"min\":1,\
+			\"max\":64,\
+			\"pattern\":\"[a-zA-Z0-9_.-]+\"\
+		},\
 	},\
-	}\
+}\
 ";
 }
 

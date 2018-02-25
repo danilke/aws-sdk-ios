@@ -32,6 +32,8 @@ FOUNDATION_EXPORT NSString *const AWSTranscribeErrorDomain;
 @class AWSTranscribeTranscript;
 @class AWSTranscribeJob;
 
+//------------------------------------------------------------------------------
+
 /**
  The status of AWS Transcribe jobs.
  */
@@ -48,6 +50,10 @@ typedef NS_ENUM(NSInteger, AWSTranscribeJobStatus) {
 	 The job is still be processed by AWS Transcribe.
 	 */
 	AWSTranscribeJobStatusInProgress,
+	/**
+	 Used for error processing when receving unknown values
+	 */
+	AWSTranscribeJobStatusUnknown,
 };
 
 /**
@@ -56,6 +62,7 @@ typedef NS_ENUM(NSInteger, AWSTranscribeJobStatus) {
 typedef NS_ENUM(NSInteger, AWSTranscribeLanguageCode) {
 	AWSTranscribeLanguageCodeEn_US,
 	AWSTranscribeLanguageCodeEs_US,
+	AWSTranscribeLanguageCodeUnknown,
 };
 
 /**
@@ -66,6 +73,7 @@ typedef NS_ENUM(NSInteger, AWSTranscribeMediaFormat) {
 	AWSTranscribeMediaFormatMP3,
 	AWSTranscribeMediaFormatMP4,
 	AWSTranscribeMediaFormatWav,
+	AWSTranscribeMediaFormatUnknown,
 };
 
 /**
@@ -118,6 +126,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 	AWSTranscribeErrorUnknown,
 };
 
+//------------------------------------------------------------------------------
+
 /**
  Describes an asynchronous request to return information about a transcription job.
 
@@ -140,6 +150,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 @end
 
+//------------------------------------------------------------------------------
+
 /**
  Response returned with a successful `GetTranscriptionJob` request.
 
@@ -161,6 +173,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 @end
 
+//------------------------------------------------------------------------------
+
 /**
  Describes an asynchronous request to list transcription jobs with the specified
  status.
@@ -177,6 +191,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
  @requires Valid Range: Minimum value of 1. Maximum value of 100.
  */
 @property (nonatomic, strong) NSNumber* _Nullable maxResults;
+
+//------------------------------------------------------------------------------
 
 /**
  If the result of the previous request to `ListTranscriptionJobs` request
@@ -197,6 +213,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 @end
 
+//------------------------------------------------------------------------------
+
 /**
  Response returned with a successful `ListTranscriptionJobsRequest`.
 
@@ -208,6 +226,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
  @see AWSTranscribeListTranscriptionJobsRequest
  */
 @interface AWSTranscribeListTranscriptionJobsOutput : AWSModel
+
+//------------------------------------------------------------------------------
 
 /**
  An array of `AWSTranscribeJobSummaries` objects containing
@@ -233,6 +253,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 @property (nonatomic, assign) AWSTranscribeJobStatus status;
 
 @end
+
+//------------------------------------------------------------------------------
 
 /**
  Describes an asynchronous job to transcribe speech to text.
@@ -288,6 +310,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 @end
 
+//------------------------------------------------------------------------------
+
 /**
  Response returned with a successful `StartTranscriptionJob` request.
 
@@ -307,12 +331,12 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 @end
 
+//------------------------------------------------------------------------------
+
 /**
  Provides a summary of information about a transcription job.
  */
 @interface AWSTranscribeJobSummaries : AWSModel
-
-@property (nonatomic, strong) AWSTranscribeJobSummaries* _Nullable transcriptionJobSummaries;
 
 /**
  Timestamp of the date and time that the job completed.
@@ -353,6 +377,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 @end
 
+//------------------------------------------------------------------------------
+
 /**
  Describes an asynchronous transcription job that was created with the
  `AWSTranscribeStartTranscriptionJobRequest` operation.
@@ -391,6 +417,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 @end
 
+//------------------------------------------------------------------------------
+
 /**
  Describes the input media file in a transcription request.
  */
@@ -411,6 +439,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 @property (nonatomic, strong) NSString* _Nullable fileUri;
 
 @end
+
+//------------------------------------------------------------------------------
 
 /**
  Describes the output of a transcription job.

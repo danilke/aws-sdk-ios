@@ -37,7 +37,7 @@
 			return nil;
 		}
 		_actionName = actionName;
-		_requestSerializer = [[AWSJSONRequestSerializer alloc]initWithJSONDefinition:JSONDefinition actionName:actionName];
+		_requestSerializer = [[AWSJSONRequestSerializer alloc] initWithJSONDefinition:JSONDefinition actionName:actionName];
 	}
 
 	return self;
@@ -76,7 +76,12 @@
 		}
 		_actionName = actionName;
 		_outputClass = outputClass;
-		_responseSerializer = [[AWSJSONResponseSerializer alloc]initWithJSONDefinition:JSONDefinition actionName:actionName outputClass:outputClass];
+		// Transcribe actions use json, while rest use xml
+		if([[_actionName lowercaseString] containsString:@"transcriptionjob"]) {
+			_responseSerializer = [[AWSJSONResponseSerializer alloc]initWithJSONDefinition:JSONDefinition actionName:actionName outputClass:outputClass];
+		}else{
+			_responseSerializer = [[AWSXMLResponseSerializer alloc]initWithJSONDefinition:JSONDefinition actionName:actionName outputClass:outputClass];
+		}
 	}
 
 	return self;

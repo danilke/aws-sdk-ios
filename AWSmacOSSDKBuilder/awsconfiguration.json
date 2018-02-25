@@ -4,7 +4,7 @@
   "CredentialsProvider": {
     "CognitoIdentity": {
       "Default": {
-        "PoolId": "us-east-1:1b5b9049-10c8-4d75-a3d1-8ab571001390",
+        "PoolId": "us-east-1:cfeceabc-bf5c-4ce6-b441-2dde599e13ca",
         "Region": "us-east-1"
       }
     }
@@ -12,9 +12,17 @@
   "IdentityManager": {
     "Default": {}
   },
+  "CognitoUserPool": {
+    "Default": {
+      "PoolId": "us-east-1_yfVZPahZT",
+      "AppClientId": "18d5qc9tvlolkc8i3gj51fqk33",
+      "AppClientSecret": "1ko2fla7jtd5lje72hind63l16foa7395nvulf5v2b2beb7gvgp7",
+      "Region": "us-east-1"
+    }
+  },
   "S3TransferUtility": {
     "Default": {
-      "Bucket": "sytrans-userfiles-mobilehub-434824089",
+      "Bucket": "sytrans-userfiles-mobilehub-1445786753",
       "Region": "us-east-1"
     }
   },
@@ -25,7 +33,7 @@
   },
   "PinpointAnalytics": {
     "Default": {
-      "AppId": "421fb8a482b845fbbb42a14f5db657f6",
+      "AppId": "8cfce9d29efa4e568ce2b17c8d55c97f",
       "Region": "us-east-1"
     }
   },
@@ -34,15 +42,15 @@
       "Region": "us-east-1"
     }
   },
-  "Transcribe": {
-	  "Default": {
-		  "Region": "us-east-1"
-	  }
-  },
-	"UserFileManager": {
+	"Transcribe": {
 		"Default": {
-			"Bucket": "sytrans-userfiles-mobilehub-434824089",
 			"Region": "us-east-1"
 		}
-	}
+	},
+  "UserFileManager": {
+    "Default": {
+      "Bucket": "sytrans-userfiles-mobilehub-1445786753",
+      "Region": "us-east-1"
+    }
+  }
 }

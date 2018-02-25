@@ -106,7 +106,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 						forKey:key];
 }
 
-+ (instancetype)S3ForKey:(NSString *)key {
++ (instancetype)transcribeForKey:(NSString *)key {
 	@synchronized(self) {
 		AWSTranscribe *serviceClient = [_serviceClients objectForKey:key];
 		if (serviceClient) {
@@ -145,11 +145,11 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 		if(!configuration.endpoint){
 			_configuration.endpoint = [[AWSEndpoint alloc] initWithRegion:_configuration.regionType
-																  service:AWSServiceS3
+																  service:AWSServiceTranscribe
 															 useUnsafeURL:NO];
 		}else{
 			[_configuration.endpoint setRegion:_configuration.regionType
-									   service:AWSServiceS3];
+									   service:AWSServiceTranscribe];
 		}
 
 
@@ -160,6 +160,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 		_configuration.baseURL = _configuration.endpoint.URL;
 		_configuration.retryHandler = [[AWSTranscribeRequestRetryHandler alloc] initWithMaximumRetryCount:_configuration.maxRetryCount];
+		_configuration.headers = @{@"Content-Type" : @"application/x-amz-json-1.1"};
 
 
 		_networking = [[AWSNetworking alloc] initWithConfiguration:_configuration];
@@ -186,16 +187,18 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 		} else {
 			networkingRequest.parameters = @{};
 		}
-		networkingRequest.shouldWriteDirectly = [[request valueForKey:@"shouldWriteDirectly"] boolValue];
-		networkingRequest.downloadingFileURL = request.downloadingFileURL;
 
+		NSMutableDictionary *headers = [NSMutableDictionary new];
+		headers[@"X-Amz-Target"] = [NSString stringWithFormat:@"%@.%@", targetPrefix, operationName];
+		networkingRequest.headers = headers;
 		networkingRequest.HTTPMethod = HTTPMethod;
-		networkingRequest.requestSerializer = [[AWSTranscribeRequestSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
-																						  actionName:operationName];
+		networkingRequest.requestSerializer = [[AWSJSONRequestSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
+																							actionName:operationName];
 		networkingRequest.responseSerializer = [[AWSTranscribeResponseSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
-																							actionName:operationName
-																						   outputClass:outputClass];
+																										 actionName:operationName
+																										outputClass:outputClass];
 
+		networkingRequest.URLString = URLString;
 		return [self.networking sendRequest:networkingRequest];
 	}
 }
@@ -206,26 +209,23 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 	return [self invokeRequest:request
 					HTTPMethod:AWSHTTPMethodPOST
 					 URLString:@"/"
-				  targetPrefix:@""
+				  targetPrefix:@"Transcribe"
 				 operationName:@"StartTranscriptionJob"
 				   outputClass:[AWSTranscribeStartTranscriptionJobOutput class]];
 }
 
-- (AWSTask<AWSTranscribeListTranscriptionJobsOutput *> *)listTranscriptionJobs:(AWSTranscribeListTranscriptionJobsRequest *)request {
-	return [self invokeRequest:request
-					HTTPMethod:AWSHTTPMethodPOST
-					 URLString:@"/"
-				  targetPrefix:@""
-				 operationName:@"ListTranscriptionJobs"
-				   outputClass:[AWSTranscribeListTranscriptionJobsOutput class]];
+- (void)startTranscriptionJob:(NSString *)jobName languageCode:(AWSTranscribeLanguageCode)languageCode mediaUri:(NSString *)mediaUri mediaSampleRate:(NSNumber *)mediaSampleRate completionHandler:(void (^)(AWSTranscribeStartTranscriptionJobOutput * _Nullable, NSError * _Nullable))completionHandler {
 
-}
-
-- (void)listTranscriptionJobsWithRequest:(AWSTranscribeListTranscriptionJobsRequest *)request completionHandler:(void (^)(AWSTranscribeListTranscriptionJobsOutput * _Nullable, NSError * _Nullable))completionHandler {
-	[[self listTranscriptionJobs:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeListTranscriptionJobsOutput *> * _Nonnull task) {
-		AWSTranscribeListTranscriptionJobsOutput *result = task.result;
+	AWSTranscribeStartTranscriptionJobRequest* request = [AWSTranscribeStartTranscriptionJobRequest new];
+	request.jobName = jobName;
+	request.languageCode = languageCode;
+	request.media = [AWSTranscribeMedia new];
+	request.media.fileUri = mediaUri;
+	request.mediaSampleRateHertz = mediaSampleRate;
+	request.mediaFormat = AWSTranscribeMediaFormatMP3;
+	[[self startTranscriptionJob:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeStartTranscriptionJobOutput *> * _Nonnull task) {
+		AWSTranscribeStartTranscriptionJobOutput *result = task.result;
 		NSError *error = task.error;
-
 		if (completionHandler) {
 			completionHandler(result, error);
 		}
@@ -234,10 +234,52 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 	}];
 }
 
+
+- (AWSTask<AWSTranscribeGetTranscriptionJobOutput *> *)getTranscriptionJob:(AWSTranscribeGetTranscriptionJobRequest *)request {
+	return [self invokeRequest:request
+					HTTPMethod:AWSHTTPMethodPOST
+					 URLString:@"/"
+				  targetPrefix:@"Transcribe"
+				 operationName:@"GetTranscriptionJob"
+				   outputClass:[AWSTranscribeGetTranscriptionJobOutput class]];
+}
+
+- (void)getTranscriptionJob:(NSString *)jobName completionHandler:(void (^)(AWSTranscribeGetTranscriptionJobOutput * _Nullable, NSError * _Nullable))completionHandler {
+	AWSTranscribeGetTranscriptionJobRequest* request = [AWSTranscribeGetTranscriptionJobRequest new];
+	request.jobName = jobName;
+	[[self getTranscriptionJob:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeGetTranscriptionJobOutput *> * _Nonnull task) {
+		AWSTranscribeGetTranscriptionJobOutput *result = task.result;
+		NSError *error = task.error;
+		if (completionHandler) {
+			completionHandler(result, error);
+		}
+
+		return nil;
+	}];
+}
+
+- (AWSTask<AWSTranscribeListTranscriptionJobsOutput *> *)listTranscriptionJobs:(AWSTranscribeListTranscriptionJobsRequest *)request {
+	return [self invokeRequest:request
+					HTTPMethod:AWSHTTPMethodPOST
+					 URLString:@"/"
+				  targetPrefix:@"Transcribe"
+				 operationName:@"ListTranscriptionJobs"
+				   outputClass:[AWSTranscribeListTranscriptionJobsOutput class]];
+
+}
+
 - (void)listTranscriptionJobs:(AWSTranscribeJobStatus)jobStatus
 			completionHandler:(void (^)(AWSTranscribeListTranscriptionJobsOutput * _Nullable, NSError * _Nullable))completionHandler {
 	AWSTranscribeListTranscriptionJobsRequest* request = [AWSTranscribeListTranscriptionJobsRequest new];
 	request.status = AWSTranscribeJobStatusCompleted;
-	[self listTranscriptionJobsWithRequest:request completionHandler:completionHandler];
+	[[self listTranscriptionJobs:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeListTranscriptionJobsOutput *> * _Nonnull task) {
+		AWSTranscribeListTranscriptionJobsOutput *result = task.result;
+		NSError *error = task.error;
+		if (completionHandler) {
+			completionHandler(result, error);
+		}
+
+		return nil;
+	}];
 }
 @end

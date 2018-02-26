@@ -181,6 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startTranscriptionJob:(NSString *)jobName
 				 languageCode:(AWSTranscribeLanguageCode)languageCode
 					 mediaUri:(NSString*)mediaUri
+					mediaFormat:(AWSTranscribeMediaFormat)mediaFormat
 			  mediaSampleRate:(NSNumber* _Nullable)mediaSampleRate
 			completionHandler:(void (^ _Nullable)(AWSTranscribeStartTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
 

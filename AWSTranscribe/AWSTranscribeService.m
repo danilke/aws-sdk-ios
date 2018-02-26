@@ -23,8 +23,6 @@
 #import <AWSCore/AWSURLResponseSerialization.h>
 #import <AWSCore/AWSURLRequestRetryHandler.h>
 #import <AWSCore/AWSSynchronizedMutableDictionary.h>
-#import "AWSTranscribeRequestRetryHandler.h"
-#import "AWSTranscribeSerializer.h"
 #import "AWSTranscribeResources.h"
 
 static NSString *const AWSInfoTranscribe = @"Transcribe";
@@ -159,9 +157,8 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 		_configuration.requestInterceptors = @[baseInterceptor, signer];
 
 		_configuration.baseURL = _configuration.endpoint.URL;
-		_configuration.retryHandler = [[AWSTranscribeRequestRetryHandler alloc] initWithMaximumRetryCount:_configuration.maxRetryCount];
+		_configuration.retryHandler = [[AWSURLRequestRetryHandler alloc] initWithMaximumRetryCount:_configuration.maxRetryCount];
 		_configuration.headers = @{@"Content-Type" : @"application/x-amz-json-1.1"};
-
 
 		_networking = [[AWSNetworking alloc] initWithConfiguration:_configuration];
 	}
@@ -194,9 +191,9 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 		networkingRequest.HTTPMethod = HTTPMethod;
 		networkingRequest.requestSerializer = [[AWSJSONRequestSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
 																							actionName:operationName];
-		networkingRequest.responseSerializer = [[AWSTranscribeResponseSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
-																										 actionName:operationName
-																										outputClass:outputClass];
+		networkingRequest.responseSerializer = [[AWSJSONResponseSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
+																							  actionName:operationName
+																							 outputClass:outputClass];
 
 		networkingRequest.URLString = URLString;
 		return [self.networking sendRequest:networkingRequest];
@@ -208,13 +205,18 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 - (AWSTask<AWSTranscribeStartTranscriptionJobOutput *> *)startTranscriptionJob:(AWSTranscribeStartTranscriptionJobRequest *)request {
 	return [self invokeRequest:request
 					HTTPMethod:AWSHTTPMethodPOST
-					 URLString:@"/"
+					 URLString:@""
 				  targetPrefix:@"Transcribe"
 				 operationName:@"StartTranscriptionJob"
 				   outputClass:[AWSTranscribeStartTranscriptionJobOutput class]];
 }
 
-- (void)startTranscriptionJob:(NSString *)jobName languageCode:(AWSTranscribeLanguageCode)languageCode mediaUri:(NSString *)mediaUri mediaSampleRate:(NSNumber *)mediaSampleRate completionHandler:(void (^)(AWSTranscribeStartTranscriptionJobOutput * _Nullable, NSError * _Nullable))completionHandler {
+- (void)startTranscriptionJob:(NSString *)jobName
+				 languageCode:(AWSTranscribeLanguageCode)languageCode
+					 mediaUri:(NSString *)mediaUri
+					 mediaFormat:(AWSTranscribeMediaFormat)mediaFormat
+			  mediaSampleRate:(NSNumber *)mediaSampleRate
+			completionHandler:(void (^)(AWSTranscribeStartTranscriptionJobOutput * _Nullable, NSError * _Nullable))completionHandler {
 
 	AWSTranscribeStartTranscriptionJobRequest* request = [AWSTranscribeStartTranscriptionJobRequest new];
 	request.jobName = jobName;
@@ -222,7 +224,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 	request.media = [AWSTranscribeMedia new];
 	request.media.fileUri = mediaUri;
 	request.mediaSampleRateHertz = mediaSampleRate;
-	request.mediaFormat = AWSTranscribeMediaFormatMP3;
+	request.mediaFormat = mediaFormat;
 	[[self startTranscriptionJob:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeStartTranscriptionJobOutput *> * _Nonnull task) {
 		AWSTranscribeStartTranscriptionJobOutput *result = task.result;
 		NSError *error = task.error;
@@ -238,7 +240,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 - (AWSTask<AWSTranscribeGetTranscriptionJobOutput *> *)getTranscriptionJob:(AWSTranscribeGetTranscriptionJobRequest *)request {
 	return [self invokeRequest:request
 					HTTPMethod:AWSHTTPMethodPOST
-					 URLString:@"/"
+					 URLString:@""
 				  targetPrefix:@"Transcribe"
 				 operationName:@"GetTranscriptionJob"
 				   outputClass:[AWSTranscribeGetTranscriptionJobOutput class]];
@@ -261,7 +263,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 - (AWSTask<AWSTranscribeListTranscriptionJobsOutput *> *)listTranscriptionJobs:(AWSTranscribeListTranscriptionJobsRequest *)request {
 	return [self invokeRequest:request
 					HTTPMethod:AWSHTTPMethodPOST
-					 URLString:@"/"
+					 URLString:@""
 				  targetPrefix:@"Transcribe"
 				 operationName:@"ListTranscriptionJobs"
 				   outputClass:[AWSTranscribeListTranscriptionJobsOutput class]];

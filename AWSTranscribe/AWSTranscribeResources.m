@@ -61,10 +61,11 @@
 	\"metadata\":{\
 		\"apiVersion\":\"2015-03-31\",\
 		\"endpointPrefix\":\"transcribe\",\
-		\"protocol\":\"json\",\
-		\"globalEndpoint\":\"transcribe.amazonaws.com\",\
-		\"serviceFullName\":\"AWS Transcribe\",\
-		\"signatureVersion\":\"\",\
+		\"jsonVersion\":\"1.1\",\
+		\"serviceFullName\":\"Amazone Transcribe\",\
+		\"signatureVersion\":\"v4\",\
+		\"targetPrefix\":\"Transcribe\",\
+		\"protocol\":\"json\"\
 	},\
 	\"operations\":{\
 		\"GetTranscriptionJob\":{\

@@ -31,6 +31,13 @@
       "Region": "us-east-1"
     }
   },
+  "ContentManager": {
+    "Default": {
+      "Bucket": "sytrans-hosting-mobilehub-1445786753",
+      "Region": "us-east-1",
+      "CloudFrontURL": "https://d22j065zpshum8.cloudfront.net"
+    }
+  },
   "PinpointAnalytics": {
     "Default": {
       "AppId": "8cfce9d29efa4e568ce2b17c8d55c97f",

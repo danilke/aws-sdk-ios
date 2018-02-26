@@ -46,7 +46,11 @@ class ViewController: NSViewController {
 	}
 
 	func startJob() {
-		AWSTranscribe.default().startTranscriptionJob("Syzygy0002", languageCode: .en_US, mediaUri: "A_File.mpg", mediaSampleRate: nil) { (results, error) in
+		AWSTranscribe.default().startTranscriptionJob("Syzygy0003",
+													  languageCode: .en_US,
+													  mediaUri: "https://s3.amazonaws.com/sytrans-userfiles-mobilehub-1445786753/public/18020706.MP3",
+													  mediaFormat: .MP3,
+													  mediaSampleRate: nil) { (results, error) in
 			if let error = error {
 				print("SyTrans: error=\(error)")
 			}
@@ -104,7 +108,7 @@ class ViewController: NSViewController {
 
 		transferUtility.uploadData(data,
 								   bucket: "sytrans-userfiles-mobilehub-1445786753",
-								   key: "public/file.mp3",
+								   key: "uploads/file.mp3",
 								   contentType: "text/plain",
 								   expression: expression,
 								   completionHandler: completionHandler).continueWith {

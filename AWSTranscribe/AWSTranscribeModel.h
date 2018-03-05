@@ -27,10 +27,15 @@ FOUNDATION_EXPORT NSString *const AWSTranscribeErrorDomain;
 @class AWSTranscribeListTranscriptionJobsOutput;
 @class AWSTranscribeStartTranscriptionJobRequest;
 @class AWSTranscribeStartTranscriptionJobOutput;
-@class AWSTranscribeJobSummaries;
-@class AWSTranscribeMedia;
-@class AWSTranscribeTranscript;
 @class AWSTranscribeJob;
+@class AWSTranscribeJobSummary;
+@class AWSTranscribeMedia;
+@class AWSTranscribeTranscriptFile;
+@class AWSTranscribeTranscript;
+@class AWSTranscribeTranscriptResults;
+@class AWSTranscribeTranscriptResultsItem;
+@class AWSTranscribeTranscriptResultsItemAlternative;
+@class AWSTranscribeTranscriptResultsTranscripts;
 
 //------------------------------------------------------------------------------
 
@@ -77,6 +82,15 @@ typedef NS_ENUM(NSInteger, AWSTranscribeMediaFormat) {
 };
 
 /**
+ The formats of the input media files supported by AWSTranscribe.
+ */
+typedef NS_ENUM(NSInteger, AWSTranscribeTranscriptItemType) {
+	AWSTranscribeTranscriptItemTypePronunciation,
+	AWSTranscribeTranscriptItemTypePunctuation,
+	AWSTranscribeTranscriptItemTypeUnknown,
+};
+
+/**
  Errors returned by AWSTrnascribe endpoints
  */
 typedef NS_ENUM(NSInteger, AWSTranscribeError) {
@@ -95,7 +109,7 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
 	 HTTP Status Code: 400
 	 */
-	AWSTranscribeConflictException,
+	AWSTranscribeErrorConflictException,
 
 	/**
 	 There was an internal error. Check the error message and try your request again.
@@ -227,13 +241,11 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
  */
 @interface AWSTranscribeListTranscriptionJobsOutput : AWSModel
 
-//------------------------------------------------------------------------------
-
 /**
- An array of `AWSTranscribeJobSummaries` objects containing
+ An array of `AWSTranscribeJobSummary` objects containing
  summary information for a transcription job.
 
- @see AWSTranscribeJobSummaries
+ @see AWSTranscribeJobSummary
  */
 @property (nonatomic, strong) NSArray* _Nullable jobSummaries;
 
@@ -246,8 +258,8 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 @property (nonatomic, strong) NSString* _Nullable nextToken;
 
 /**
- When specified, returns only transcription jobs with the specified status.
-
+ The requested status of the jobs returned.
+ 
  @see AWSTranscribeJobStatus
  */
 @property (nonatomic, assign) AWSTranscribeJobStatus status;
@@ -336,7 +348,7 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 /**
  Provides a summary of information about a transcription job.
  */
-@interface AWSTranscribeJobSummaries : AWSModel
+@interface AWSTranscribeJobSummary : AWSModel
 
 /**
  Timestamp of the date and time that the job completed.
@@ -385,7 +397,7 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 
  @see AWSTranscribeStartTranscriptionJobRequest
  */
-@interface AWSTranscribeJob : AWSTranscribeJobSummaries
+@interface AWSTranscribeJob : AWSTranscribeJobSummary
 
 /**
  An object that describes the input media for a transcription job.
@@ -411,9 +423,9 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 /**
  An object that describes the output of the transcription job.
 
- @see AWSTranscribeTranscript
+ @see AWSTranscribeTranscriptFile
  */
-@property (nonatomic, strong) AWSTranscribeTranscript* _Nullable transcript;
+@property (nonatomic, strong) AWSTranscribeTranscriptFile* _Nullable transcript;
 
 @end
 
@@ -445,7 +457,7 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
 /**
  Describes the output of a transcription job.
  */
-@interface AWSTranscribeTranscript : AWSModel
+@interface AWSTranscribeTranscriptFile : AWSModel
 
 /**
  The S3 location where the transcription result is stored. Use this URI to access
@@ -454,6 +466,119 @@ typedef NS_ENUM(NSInteger, AWSTranscribeError) {
  @requires Length Constraints: Minimum length of 1. Maximum length of 2000.
  */
 @property (nonatomic, strong) NSString* _Nullable fileUri;
+
+@end
+
+//------------------------------------------------------------------------------
+
+/**
+ Describes the output of a transcription job.
+ */
+@interface AWSTranscribeTranscript : AWSModel
+
+/**
+ The account that performed the transcription.
+ */
+@property (nonatomic, strong) NSString* _Nullable accountId;
+
+/**
+ The name of the job.
+ */
+@property (nonatomic, strong) NSString* _Nullable jobName;
+
+/**
+ The transciption results as a `AWSTranscribeTranscriptResults`.
+ */
+@property (nonatomic, strong) AWSTranscribeTranscriptResults* _Nullable results;
+
+/**
+ The status of the transcription job.
+ */
+@property (nonatomic, assign) AWSTranscribeJobStatus status;
+
+@end
+
+//------------------------------------------------------------------------------
+
+/**
+ Describes the output of a transcription job.
+ */
+@interface AWSTranscribeTranscriptResults : AWSModel
+
+/**
+ An array of `AWSTranscribeTranscriptResultsItem` representing each word
+ identified on the speech.
+ */
+@property (nonatomic, strong) NSArray* _Nullable items;
+
+/**
+ An array of `AWSTranscribeTranscriptResultsTranscripts` that contain
+ the transcribed texts.
+ */
+@property (nonatomic, strong) NSArray* _Nullable transcripts;
+
+@end
+
+//------------------------------------------------------------------------------
+
+/**
+ Describes the output of a transcription job.
+ */
+@interface AWSTranscribeTranscriptResultsItem : AWSModel
+
+/**
+ An arry of `AWSTranscribeTranscriptResultsItemAlternative` that represent
+ the various words identified in the speech.
+ */
+@property (nonatomic, strong) NSArray* _Nullable alternatives;
+
+/**
+ The start time in the media file of this item
+ */
+@property (nonatomic, strong) NSNumber* _Nullable startTime;
+
+/**
+ The end time in the media file of this item
+ */
+@property (nonatomic, strong) NSNumber* _Nullable endTime;
+
+/**
+ The type of item as a `AWSTranscribeTranscriptItemType`.
+ */
+@property (nonatomic, assign) AWSTranscribeTranscriptItemType type;
+
+@end
+
+//------------------------------------------------------------------------------
+
+/**
+ A trancribed unit, usually word or phrase.
+ */
+@interface AWSTranscribeTranscriptResultsItemAlternative : AWSModel
+
+/**
+ The confidence of the transcription as a percentage.
+ */
+@property (nonatomic, strong) NSNumber* _Nullable confidence;
+
+/**
+ A transcribed unit, usually word or phrase.
+ */
+@property (nonatomic, strong) NSString* _Nullable content;
+
+@end
+
+//------------------------------------------------------------------------------
+
+/**
+ Describes the output of a transcription job.
+ */
+@interface AWSTranscribeTranscriptResultsTranscripts : AWSModel
+
+/**
+ The transcipt.
+ */
+@property (nonatomic, strong) NSString* _Nullable transcript;
 
 @end
 

@@ -14,6 +14,8 @@
 //
 
 #import "AWSTranscribeService.h"
+#import "AWSTranscribeSerializer.h"
+
 #import <AWSCore/AWSNetworking.h>
 #import <AWSCore/AWSCategory.h>
 #import <AWSCore/AWSNetworking.h>
@@ -76,8 +78,20 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 		AWSServiceConfiguration *serviceConfiguration = nil;
 		AWSServiceInfo *serviceInfo = [[AWSInfo defaultAWSInfo] defaultServiceInfo:AWSInfoTranscribe];
 		if (serviceInfo) {
+			NSString* poolId = [serviceInfo infoDictionary][@"PoolId"];
+			NSString* unauth = [serviceInfo infoDictionary][@"UnauthRoleArn"];
+			NSString* auth = [serviceInfo infoDictionary][@"AuthRoleArn"];
+			AWSCognitoCredentialsProviderHelper* helper = [[AWSCognitoCredentialsProviderHelper alloc] initWithRegionType:serviceInfo.region
+																										   identityPoolId:poolId
+																										  useEnhancedFlow:NO
+																								  identityProviderManager:nil];
+			AWSCognitoCredentialsProvider* provider = [[AWSCognitoCredentialsProvider alloc] initWithRegionType:serviceInfo.region
+																								  unauthRoleArn:unauth
+																									authRoleArn:auth
+																							   identityProvider:helper];
+
 			serviceConfiguration = [[AWSServiceConfiguration alloc] initWithRegion:serviceInfo.region
-															   credentialsProvider:serviceInfo.cognitoCredentialsProvider];
+															   credentialsProvider:provider];
 		}
 
 		if (!serviceConfiguration) {
@@ -89,6 +103,8 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 										   reason:@"The service configuration is `nil`. You need to configure `awsconfiguration.json`, `Info.plist` or set `defaultServiceConfiguration` before using this method."
 										 userInfo:nil];
 		}
+
+
 		_defaultTranscribe = [[AWSTranscribe alloc] initWithConfiguration:serviceConfiguration];
 	});
 
@@ -191,7 +207,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 		networkingRequest.HTTPMethod = HTTPMethod;
 		networkingRequest.requestSerializer = [[AWSJSONRequestSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
 																							actionName:operationName];
-		networkingRequest.responseSerializer = [[AWSJSONResponseSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
+		networkingRequest.responseSerializer = [[AWSTranscribeResponseSerializer alloc] initWithJSONDefinition:[[AWSTranscribeResources sharedInstance] JSONObject]
 																							  actionName:operationName
 																							 outputClass:outputClass];
 
@@ -200,7 +216,9 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 	}
 }
 
+//------------------------------------------------------------------------------
 #pragma mark - Service method
+//------------------------------------------------------------------------------
 
 - (AWSTask<AWSTranscribeStartTranscriptionJobOutput *> *)startTranscriptionJob:(AWSTranscribeStartTranscriptionJobRequest *)request {
 	return [self invokeRequest:request
@@ -211,7 +229,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 				   outputClass:[AWSTranscribeStartTranscriptionJobOutput class]];
 }
 
-- (void)startTranscriptionJob:(NSString *)jobName
+- (AWSTask<AWSTranscribeStartTranscriptionJobOutput *> *)startTranscriptionJob:(NSString *)jobName
 				 languageCode:(AWSTranscribeLanguageCode)languageCode
 					 mediaUri:(NSString *)mediaUri
 					 mediaFormat:(AWSTranscribeMediaFormat)mediaFormat
@@ -225,7 +243,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 	request.media.fileUri = mediaUri;
 	request.mediaSampleRateHertz = mediaSampleRate;
 	request.mediaFormat = mediaFormat;
-	[[self startTranscriptionJob:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeStartTranscriptionJobOutput *> * _Nonnull task) {
+	return [[self startTranscriptionJob:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeStartTranscriptionJobOutput *> * _Nonnull task) {
 		AWSTranscribeStartTranscriptionJobOutput *result = task.result;
 		NSError *error = task.error;
 		if (completionHandler) {
@@ -236,6 +254,7 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 	}];
 }
 
+//------------------------------------------------------------------------------
 
 - (AWSTask<AWSTranscribeGetTranscriptionJobOutput *> *)getTranscriptionJob:(AWSTranscribeGetTranscriptionJobRequest *)request {
 	return [self invokeRequest:request
@@ -246,10 +265,11 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 				   outputClass:[AWSTranscribeGetTranscriptionJobOutput class]];
 }
 
-- (void)getTranscriptionJob:(NSString *)jobName completionHandler:(void (^)(AWSTranscribeGetTranscriptionJobOutput * _Nullable, NSError * _Nullable))completionHandler {
+- (AWSTask<AWSTranscribeGetTranscriptionJobOutput *> *)getTranscriptionJob:(NSString *)jobName
+		completionHandler:(void (^)(AWSTranscribeGetTranscriptionJobOutput * _Nullable, NSError * _Nullable))completionHandler {
 	AWSTranscribeGetTranscriptionJobRequest* request = [AWSTranscribeGetTranscriptionJobRequest new];
 	request.jobName = jobName;
-	[[self getTranscriptionJob:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeGetTranscriptionJobOutput *> * _Nonnull task) {
+	return [[self getTranscriptionJob:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeGetTranscriptionJobOutput *> * _Nonnull task) {
 		AWSTranscribeGetTranscriptionJobOutput *result = task.result;
 		NSError *error = task.error;
 		if (completionHandler) {
@@ -259,6 +279,34 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 		return nil;
 	}];
 }
+
+//------------------------------------------------------------------------------
+
+- (NSURLSessionDataTask*)getTranscriptionJobResults:(NSString *)fileUri
+		completionHandler:(void (^)(AWSTranscribeTranscript * _Nullable, NSError * _Nullable))completionHandler {
+	NSURL *url = [NSURL URLWithString:fileUri];
+	NSURLSessionDataTask *downloadTask = [[NSURLSession sharedSession] dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+		if (error && completionHandler) {
+			completionHandler(nil, error);
+			return;
+		}
+
+		NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+		if (error && completionHandler) {
+			completionHandler(nil, error);
+			return;
+		}
+
+		AWSTranscribeTranscript *result = [AWSMTLJSONAdapter modelOfClass:AWSTranscribeTranscript.class fromJSONDictionary:json error:&error];
+		if (completionHandler) {
+			completionHandler(result, error);
+		}
+	}];
+	[downloadTask resume];
+	return downloadTask;
+}
+
+//------------------------------------------------------------------------------
 
 - (AWSTask<AWSTranscribeListTranscriptionJobsOutput *> *)listTranscriptionJobs:(AWSTranscribeListTranscriptionJobsRequest *)request {
 	return [self invokeRequest:request
@@ -270,11 +318,11 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 
 }
 
-- (void)listTranscriptionJobs:(AWSTranscribeJobStatus)jobStatus
-			completionHandler:(void (^)(AWSTranscribeListTranscriptionJobsOutput * _Nullable, NSError * _Nullable))completionHandler {
+- (AWSTask<AWSTranscribeListTranscriptionJobsOutput *> *)listTranscriptionJobs:(AWSTranscribeJobStatus)jobStatus
+		completionHandler:(void (^)(AWSTranscribeListTranscriptionJobsOutput * _Nullable, NSError * _Nullable))completionHandler {
 	AWSTranscribeListTranscriptionJobsRequest* request = [AWSTranscribeListTranscriptionJobsRequest new];
-	request.status = AWSTranscribeJobStatusCompleted;
-	[[self listTranscriptionJobs:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeListTranscriptionJobsOutput *> * _Nonnull task) {
+	request.status = jobStatus;
+	return [[self listTranscriptionJobs:request] continueWithBlock:^id _Nullable(AWSTask<AWSTranscribeListTranscriptionJobsOutput *> * _Nonnull task) {
 		AWSTranscribeListTranscriptionJobsOutput *result = task.result;
 		NSError *error = task.error;
 		if (completionHandler) {
@@ -284,4 +332,5 @@ static AWSSynchronizedMutableDictionary *_serviceClients = nil;
 		return nil;
 	}];
 }
+
 @end

@@ -42,13 +42,13 @@ class ViewController: NSViewController {
 		uploadData()
 	}
 	@IBAction func getJobClicked(_ sender: Any) {
-		getJob(jobName: "Syzygy0001")
+		getJob(jobName: "Syzygy0004")
 	}
 
 	func startJob() {
-		AWSTranscribe.default().startTranscriptionJob("Syzygy0003",
+		AWSTranscribe.default().startTranscriptionJob("Syzygy0004",
 													  languageCode: .en_US,
-													  mediaUri: "https://s3.amazonaws.com/sytrans-userfiles-mobilehub-1445786753/public/18020706.MP3",
+													  mediaUri: "https://s3.amazonaws.com/sytrans-userfiles-mobilehub-1866527347/public/18010904.MP3",
 													  mediaFormat: .MP3,
 													  mediaSampleRate: nil) { (results, error) in
 			if let error = error {
@@ -62,13 +62,30 @@ class ViewController: NSViewController {
 	}
 
 	func listJobs() {
+//		AWSTranscribe.default().listTranscriptionJobs(.inProgress) { (results, error) in
+//			if let error = error {
+//				print("SyTrans: error=\(error)")
+//			}
+//
+//			if let results = results {
+//				print("InProgress=\(results)")
+//			}
+//		}
 		AWSTranscribe.default().listTranscriptionJobs(.completed) { (results, error) in
 			if let error = error {
 				print("SyTrans: error=\(error)")
 			}
 
 			if let results = results {
-				print("results=\(results)")
+				print("Completed=\(results)")
+
+				if results.status == .completed {
+					print("Completed.status=\(results.status)")
+				}
+
+				if let first = results.jobSummaries?.first {
+					print("first=\(first)")
+				}
 			}
 		}
 	}
@@ -80,7 +97,18 @@ class ViewController: NSViewController {
 			}
 
 			if let results = results {
-				print("results=\(results)")
+				if let fileUri = results.job?.transcript?.fileUri {
+					print("results.fileUri=\(fileUri)")
+					AWSTranscribe.default().getTranscriptionJobResults(fileUri, completionHandler: { (results, error) in
+						if let error = error {
+							print("SyTrans: error=\(error)")
+						}
+
+						if let results = results {
+							print("transcript=\(results)")
+						}
+					})
+				}
 			}
 		}
 	}
@@ -107,7 +135,7 @@ class ViewController: NSViewController {
 		let transferUtility = AWSS3TransferUtility.default()
 
 		transferUtility.uploadData(data,
-								   bucket: "sytrans-userfiles-mobilehub-1445786753",
+								   bucket: "sytrans-userfiles-mobilehub-1866527347",
 								   key: "uploads/file.mp3",
 								   contentType: "text/plain",
 								   expression: expression,
@@ -122,5 +150,9 @@ class ViewController: NSViewController {
 									}
 									return nil;
 		}
+	}
+
+	func downloadTranscript(fileUri: String) {
+//		let request = NSURLRequest(url: fileUri, cachePolicy: NSURLRequest.CachePolicy.reloadRevalidatingCacheData, timeoutInterval: 20)
 	}
 }

@@ -97,6 +97,10 @@
 		},\
 	},\
 	\"shapes\":{\
+		\"GetTranscriptionJobRequest\":{\
+		},\
+		\"GetTranscriptionJobOutput\":{\
+		},\
 		\"ListTranscriptionJobsRequest\":{\
 			\"type\":\"structure\",\
 			\"required\":[\"Status\"],\
@@ -113,11 +117,6 @@
 			}\
 		},\
 		\"ListTranscriptionJobsOutput\":{\
-			\"type\":\"structure\",\
-			\"members\":{\
-				\"Buckets\":{\"shape\":\"Buckets\"},\
-				\"Owner\":{\"shape\":\"Owner\"}\
-			}\
 		},\
 		\"JobStatus\":{\
 			\"type\":\"string\",\

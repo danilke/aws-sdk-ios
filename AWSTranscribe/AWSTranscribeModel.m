@@ -33,6 +33,10 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 	return @[@"flac", @"mp3", @"mp4", @"wav"];
 }
 
++ (NSArray*)transcriptItemTypeStrings {
+	return @[@"pronunciation", @"punctuation"];
+}
+
 + (NSValueTransformer *)transformDate {
 	return [AWSMTLValueTransformer reversibleTransformerWithForwardBlock:^id(NSNumber *number) {
 		return [NSDate dateWithTimeIntervalSince1970:[number doubleValue]];
@@ -82,7 +86,7 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 	};
 }
 
-+ (NSValueTransformer *)jobTransformer {
++ (NSValueTransformer *)jobJSONTransformer {
 	return [NSValueTransformer awsmtl_JSONDictionaryTransformerWithModelClass:[AWSTranscribeJob class]];
 }
 
@@ -121,7 +125,7 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 }
 
 + (NSValueTransformer *)jobSummariesJSONTransformer {
-	return [NSValueTransformer awsmtl_JSONArrayTransformerWithModelClass:[AWSTranscribeJobSummaries class]];
+	return [NSValueTransformer awsmtl_JSONArrayTransformerWithModelClass:[AWSTranscribeJobSummary class]];
 }
 
 + (NSValueTransformer *)statusJSONTransformer {
@@ -170,7 +174,7 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 	};
 }
 
-+ (NSValueTransformer *)jobTransformer {
++ (NSValueTransformer *)jobJSONTransformer {
 	return [NSValueTransformer awsmtl_JSONDictionaryTransformerWithModelClass:[AWSTranscribeJob class]];
 }
 
@@ -180,7 +184,7 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 #pragma mark Utility Models
 //------------------------------------------------------------------------------
 
-@implementation AWSTranscribeJobSummaries
+@implementation AWSTranscribeJobSummary
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
 	return @{
@@ -237,7 +241,7 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 }
 
 + (NSValueTransformer *)transcriptJSONTransformer {
-	return [NSValueTransformer awsmtl_JSONDictionaryTransformerWithModelClass:[AWSTranscribeTranscript class]];
+	return [NSValueTransformer awsmtl_JSONDictionaryTransformerWithModelClass:[AWSTranscribeTranscriptFile class]];
 }
 
 @end
@@ -248,8 +252,20 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
 	return @{
-			 @"fileUri" : @"MediaFileUri",
-			 };
+		@"fileUri" : @"MediaFileUri",
+	};
+}
+
+@end
+
+//------------------------------------------------------------------------------
+
+@implementation AWSTranscribeTranscriptFile
+
++ (NSDictionary *)JSONKeyPathsByPropertyKey {
+	return @{
+		@"fileUri" : @"TranscriptFileUri",
+	};
 }
 
 @end
@@ -260,10 +276,91 @@ NSString *const AWSTranscribeErrorDomain = @"com.amazonaws.AWSTranscribeErrorDom
 
 + (NSDictionary *)JSONKeyPathsByPropertyKey {
 	return @{
-		@"fileUri" : @"TranscriptFileUri",
+		@"accountId" : @"accountId",
+		@"jobName" : @"jobName",
+		@"results" : @"results",
+		@"status" : @"status",
+	};
+}
+
++ (NSValueTransformer *)resultJSONTransformer {
+	return [NSValueTransformer awsmtl_JSONDictionaryTransformerWithModelClass:[AWSTranscribeTranscriptResults class]];
+}
+
++ (NSValueTransformer *)statusJSONTransformer {
+	return [AWSModel transformWith:[AWSModel jobStatusStrings]];
+}
+
+@end
+
+//------------------------------------------------------------------------------
+
+@implementation AWSTranscribeTranscriptResults
+
++ (NSDictionary *)JSONKeyPathsByPropertyKey {
+	return @{
+		@"items" : @"items",
+		@"transcripts" : @"transcripts",
+	};
+}
+
++ (NSValueTransformer *)itemsJSONTransformer {
+	return [NSValueTransformer awsmtl_JSONArrayTransformerWithModelClass:[AWSTranscribeTranscriptResultsItem class]];
+}
+
++ (NSValueTransformer *)transcriptsJSONTransformer {
+	return [NSValueTransformer awsmtl_JSONArrayTransformerWithModelClass:[AWSTranscribeTranscriptResultsTranscripts class]];
+}
+
+@end
+
+//------------------------------------------------------------------------------
+
+@implementation AWSTranscribeTranscriptResultsItem
+
++ (NSDictionary *)JSONKeyPathsByPropertyKey {
+	return @{
+		@"alternatives" : @"alternatives",
+		@"startTime" : @"startTime",
+		@"endTime" : @"endTime",
+		@"type" : @"type",
+	};
+}
+
++ (NSValueTransformer *)alternativesJSONTransformer {
+	return [NSValueTransformer awsmtl_JSONArrayTransformerWithModelClass:[AWSTranscribeTranscriptResultsItemAlternative class]];
+}
+
++ (NSValueTransformer *)typeJSONTransformer {
+	return [AWSModel transformWith:[AWSModel transcriptItemTypeStrings]];
+}
+
+@end
+
+//------------------------------------------------------------------------------
+
+@implementation AWSTranscribeTranscriptResultsItemAlternative
+
++ (NSDictionary *)JSONKeyPathsByPropertyKey {
+	return @{
+		@"confidence" : @"confidence",
+		@"content" : @"content",
 	};
 }
 
 @end
+
+//------------------------------------------------------------------------------
+
+@implementation AWSTranscribeTranscriptResultsTranscripts
+
++ (NSDictionary *)JSONKeyPathsByPropertyKey {
+	return @{
+		@"transcript" : @"transcript",
+	};
+}
+
+@end
+
 
 

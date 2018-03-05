@@ -178,12 +178,12 @@ NS_ASSUME_NONNULL_BEGIN
  @see AWSTranscribeStartTranscriptionJobRequest
  @see AWSTranscribeStartTranscriptionJobOutput
  */
-- (void)startTranscriptionJob:(NSString *)jobName
-				 languageCode:(AWSTranscribeLanguageCode)languageCode
-					 mediaUri:(NSString*)mediaUri
-					mediaFormat:(AWSTranscribeMediaFormat)mediaFormat
-			  mediaSampleRate:(NSNumber* _Nullable)mediaSampleRate
-			completionHandler:(void (^ _Nullable)(AWSTranscribeStartTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
+- (AWSTask<AWSTranscribeStartTranscriptionJobOutput *> *)startTranscriptionJob:(NSString *)jobName
+																  languageCode:(AWSTranscribeLanguageCode)languageCode
+																	  mediaUri:(NSString*)mediaUri
+																   mediaFormat:(AWSTranscribeMediaFormat)mediaFormat
+															   mediaSampleRate:(NSNumber* _Nullable)mediaSampleRate
+															 completionHandler:(void (^ _Nullable)(AWSTranscribeStartTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
 
 /**
  Gets an existing transaction job.
@@ -196,8 +196,22 @@ NS_ASSUME_NONNULL_BEGIN
  @see AWSTranscribeGetTranscriptionJobOutput
  @see AWSTranscribeError
  */
-- (void)getTranscriptionJob:(NSString *)jobName
-		  completionHandler:(void (^ _Nullable)(AWSTranscribeGetTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
+- (AWSTask<AWSTranscribeGetTranscriptionJobOutput *> *)getTranscriptionJob:(NSString *)jobName
+														 completionHandler:(void (^ _Nullable)(AWSTranscribeGetTranscriptionJobOutput * _Nullable response, NSError * _Nullable error))completionHandler;
+
+/**
+ Gets the results from a completed transcription job.
+
+ @param fileUri The URI of the results returned in `AWSTranscribeGetTranscriptionJobOutput`.
+ @param completionHandler The completion handler to call when the load request is complete.
+ `response` - A response object, or `nil` if the request failed.
+ `error` - An error object that indicates why the request failed, or `nil` if the request was successful.
+
+ @see AWSTranscribeTranscript
+ @see AWSTranscribeGetTranscriptionJobOutput
+ */
+- (NSURLSessionDataTask*)getTranscriptionJobResults:(NSString *)fileUri
+								  completionHandler:(void (^ _Nullable)(AWSTranscribeTranscript * _Nullable response, NSError * _Nullable error))completionHandler;
 
 /**
  Returns a list of all transcription jobs matching `jobStatus`.
@@ -211,8 +225,8 @@ NS_ASSUME_NONNULL_BEGIN
  @see AWSTranscribeJobStatus
  @see AWSTranscribeError
  */
-- (void)listTranscriptionJobs:(AWSTranscribeJobStatus)jobStatus
-			completionHandler:(void (^ _Nullable)(AWSTranscribeListTranscriptionJobsOutput * _Nullable response, NSError * _Nullable error))completionHandler;
+- (AWSTask<AWSTranscribeListTranscriptionJobsOutput *> *)listTranscriptionJobs:(AWSTranscribeJobStatus)jobStatus
+															 completionHandler:(void (^ _Nullable)(AWSTranscribeListTranscriptionJobsOutput * _Nullable response, NSError * _Nullable error))completionHandler;
 
 @end
 

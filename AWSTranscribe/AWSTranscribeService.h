@@ -29,41 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) AWSServiceConfiguration *configuration;
 
 /**
- Returns the singleton service client. If the singleton object does not exist, the SDK instantiates the default service client with `defaultServiceConfiguration` from `[AWSServiceManager defaultServiceManager]`. The reference to this object is maintained by the SDK, and you do not need to retain it manually.
+ Returns the singleton service client. If the singleton object does not exist, the
+ SDK instantiates the default service client with `defaultServiceConfiguration`
+ from `[AWSServiceManager defaultServiceManager]`. The reference to this object
+ is maintained by the SDK, and you do not need to retain it manually.
 
  For example, set the default service configuration in `- application:didFinishLaunchingWithOptions:`
-
- *Swift*
-
- func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
- let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
- let configuration = AWSServiceConfiguration(region: .USEast1, credentialsProvider: credentialProvider)
- AWSServiceManager.default().defaultServiceConfiguration = configuration
-
- return true
- }
-
- *Objective-C*
-
- - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
- AWSCognitoCredentialsProvider *credentialsProvider = [[AWSCognitoCredentialsProvider alloc] initWithRegionType:AWSRegionUSEast1
- identityPoolId:@"YourIdentityPoolId"];
- AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSEast1
- credentialsProvider:credentialsProvider];
- [AWSServiceManager defaultServiceManager].defaultServiceConfiguration = configuration;
-
- return YES;
- }
-
- Then call the following to get the default service client:
-
- *Swift*
-
- let S3 = AWSS3.default()
-
- *Objective-C*
-
- AWSS3 *S3 = [AWSS3 defaultS3];
 
  @return The default service client.
  */
@@ -72,43 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Creates a service client with the given service configuration and registers it for the key.
 
- For example, set the default service configuration in `- application:didFinishLaunchingWithOptions:`
-
- *Swift*
-
- func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
- let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
- let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
- AWSS3.register(with: configuration!, forKey: "USWest2S3")
-
- return true
- }
-
- *Objective-C*
-
- - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
- AWSCognitoCredentialsProvider *credentialsProvider = [[AWSCognitoCredentialsProvider alloc] initWithRegionType:AWSRegionUSEast1
- identityPoolId:@"YourIdentityPoolId"];
- AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2
- credentialsProvider:credentialsProvider];
-
- [AWSS3 registerS3WithConfiguration:configuration forKey:@"USWest2S3"];
-
- return YES;
- }
-
- Then call the following to get the service client:
-
- *Swift*
-
- let S3 = AWSS3(forKey: "USWest2S3")
-
- *Objective-C*
-
- AWSS3 *S3 = [AWSS3 S3ForKey:@"USWest2S3"];
-
  @warning After calling this method, do not modify the configuration object. It may cause unspecified behaviors.
-
  @param configuration A service configuration object.
  @param key           A string to identify the service client.
  */
@@ -117,43 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Retrieves the service client associated with the key. You need to call `+ registerS3WithConfiguration:forKey:` before invoking this method.
 
- For example, set the default service configuration in `- application:didFinishLaunchingWithOptions:`
-
- *Swift*
-
- func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
- let credentialProvider = AWSCognitoCredentialsProvider(regionType: .USEast1, identityPoolId: "YourIdentityPoolId")
- let configuration = AWSServiceConfiguration(region: .USWest2, credentialsProvider: credentialProvider)
- AWSS3.register(with: configuration!, forKey: "USWest2S3")
-
- return true
- }
-
- *Objective-C*
-
- - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
- AWSCognitoCredentialsProvider *credentialsProvider = [[AWSCognitoCredentialsProvider alloc] initWithRegionType:AWSRegionUSEast1
- identityPoolId:@"YourIdentityPoolId"];
- AWSServiceConfiguration *configuration = [[AWSServiceConfiguration alloc] initWithRegion:AWSRegionUSWest2
- credentialsProvider:credentialsProvider];
-
- [AWSS3 registerS3WithConfiguration:configuration forKey:@"USWest2S3"];
-
- return YES;
- }
-
- Then call the following to get the service client:
-
- *Swift*
-
- let S3 = AWSS3(forKey: "USWest2S3")
-
- *Objective-C*
-
- AWSS3 *S3 = [AWSS3 S3ForKey:@"USWest2S3"];
-
  @param key A string to identify the service client.
-
  @return An instance of the service client.
  */
 + (instancetype)transcribeForKey:(NSString *)key;
@@ -162,7 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
  Removes the service client associated with the key and release it.
 
  @warning Before calling this method, make sure no method is running on this client.
-
  @param key A string to identify the service client.
  */
 + (void)removeTranscribeForKey:(NSString *)key;
